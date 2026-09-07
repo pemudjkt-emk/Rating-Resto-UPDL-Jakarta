@@ -158,7 +158,7 @@ if st.session_state.tahap == 'form':
         
         col2_space, col2_kiri, col2_kanan, col2_space2 = st.columns([1, 4, 4.5, 0.5], vertical_alignment="center")
         with col2_kiri:
-            st.markdown("<p class='tanya-teks'>BAGAIMANA KEBERSIHAN DAN HYGENIS?</p>", unsafe_allow_html=True)
+            st.markdown("<p class='tanya-teks'>BAGAIMANA KEBERSIHAN MAKANAN DAN RESTO?</p>", unsafe_allow_html=True)
         with col2_kanan:
             kebersihan = st.feedback("stars", key=f"bintang_kebersihan_{st.session_state.sesi_id}")
         
