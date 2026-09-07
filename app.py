@@ -23,8 +23,7 @@ def get_image_base64(file_path):
     return "" 
 
 img_danantara = get_image_base64("logo_danantara.png")
-# Menyesuaikan nama file dengan yang ada di GitHub Anda saat ini
-img_pln = get_image_base64("Logo PLN.png") 
+img_pln = get_image_base64("Logo PLN.png")
 img_updl = get_image_base64("logo_updl.png")
 
 # INJEKSI CSS KUSTOM
@@ -45,7 +44,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
     box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.05) !important; 
 }
 div[data-testid="stFeedback"] {
-    transform: scale(6.75); 
+    transform: scale(6.75); /* Ukuran bintang ekstra besar sesuai request */
     transform-origin: left center;
     margin-left: 10px; 
 }
@@ -159,7 +158,7 @@ if st.session_state.tahap == 'form':
         
         col2_space, col2_kiri, col2_kanan, col2_space2 = st.columns([1, 4, 4.5, 0.5], vertical_alignment="center")
         with col2_kiri:
-            st.markdown("<p class='tanya-teks'>BAGAIMANA KEBERSIHAN DAN HIGIENIS?</p>", unsafe_allow_html=True)
+            st.markdown("<p class='tanya-teks'>BAGAIMANA KEBERSIHAN DAN HYGENIS?</p>", unsafe_allow_html=True)
         with col2_kanan:
             kebersihan = st.feedback("stars", key=f"bintang_kebersihan_{st.session_state.sesi_id}")
         
@@ -177,7 +176,6 @@ if st.session_state.tahap == 'form':
             if rasa is None or kebersihan is None or variasi is None:
                 st.warning("⚠️ Mohon lengkapi semua bintang sebelum mengirim.")
             else:
-                # Simpan jawaban ke memori sementara lalu pindah ke tahap loading
                 st.session_state.data_temp = {
                     "rasa": rasa,
                     "kebersihan": kebersihan,
@@ -199,10 +197,10 @@ elif st.session_state.tahap == 'loading':
     try:
         conn = st.connection("gsheets", type=GSheetsConnection)
         
-        # PERBAIKAN: Sebutkan nama tab secara eksplisit (Misal: "Sheet1")
+        # PERBAIKAN 1: Sebutkan Sheet1 dan paksa baca ulang tanpa memori
         df_lama = conn.read(worksheet="Sheet1", ttl=0)
         
-        # Penyesuaian nama kolom database (Sesuaikan dengan nama kolom di Sheet Anda)
+        # PERBAIKAN 2: Kolom disamakan 100% dengan gambar Anda
         data_baru = pd.DataFrame([{
             "Waktu": pd.Timestamp.now(tz='Asia/Jakarta').strftime('%Y-%m-%d %H:%M:%S'),
             "Rasa Makanan": st.session_state.data_temp["rasa"] + 1,
@@ -212,15 +210,16 @@ elif st.session_state.tahap == 'loading':
         
         df_update = pd.concat([df_lama, data_baru], ignore_index=True)
         
-        # PERBAIKAN: Sebutkan nama tab saat update dan paksa bersihkan cache
+        # PERBAIKAN 3: Sebutkan Sheet1 saat mengupdate dan bersihkan cache
         conn.update(worksheet="Sheet1", data=df_update)
-        st.cache_data.clear() 
+        st.cache_data.clear()
         
         st.session_state.tahap = 'sukses'
         st.rerun()
         
     except Exception as e:
-        st.error(f"⚠️ Gagal menyimpan data. Pastikan konfigurasi rahasia (Secrets) benar dan internet stabil. Detail: {e}")
+        # Jika gagal, akan muncul pesan merah ini selama 5 detik lalu reset ke form awal
+        st.error(f"⚠️ GAGAL MENYIMPAN! Pastikan email service account sudah dijadikan EDITOR di Google Sheets. Detail Error: {e}")
         time.sleep(5)
         st.session_state.tahap = 'form'
         st.rerun()
@@ -232,12 +231,10 @@ elif st.session_state.tahap == 'sukses':
     
     st.markdown("<br><br><br><br>", unsafe_allow_html=True)
     st.markdown("<h1 style='text-align: center; font-size: 80px; color: #004581;'>✨ TERIMA KASIH! ✨</h1>", unsafe_allow_html=True)
-    st.markdown("<h2 style='text-align: center; color: #666;'>Penilaian Anda sangat berarti bagi peningkatan kualitas kami.</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align: center; color: #666;'>Penilaian Anda sangat berarti bagi kami.</h2>", unsafe_allow_html=True)
     
-    # Tahan layar selama 5 detik
     time.sleep(5)
     
-    # Reset sistem dan persiapkan untuk peserta berikutnya
     st.session_state.sesi_id += 1
     st.session_state.tahap = 'form'
     st.rerun()
