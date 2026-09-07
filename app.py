@@ -198,9 +198,11 @@ elif st.session_state.tahap == 'loading':
     
     try:
         conn = st.connection("gsheets", type=GSheetsConnection)
-        df_lama = conn.read(ttl=0)
         
-        # Mapping nama kolom agar sesuai persis dengan Spreadsheet Resto
+        # PERBAIKAN: Sebutkan nama tab secara eksplisit (Misal: "Sheet1")
+        df_lama = conn.read(worksheet="Sheet1", ttl=0)
+        
+        # Penyesuaian nama kolom database (Sesuaikan dengan nama kolom di Sheet Anda)
         data_baru = pd.DataFrame([{
             "Waktu": pd.Timestamp.now(tz='Asia/Jakarta').strftime('%Y-%m-%d %H:%M:%S'),
             "Rasa Makanan": st.session_state.data_temp["rasa"] + 1,
@@ -209,16 +211,17 @@ elif st.session_state.tahap == 'loading':
         }])
         
         df_update = pd.concat([df_lama, data_baru], ignore_index=True)
-        conn.update(data=df_update)
         
-        # Jika berhasil, pindah ke layar Sukses
+        # PERBAIKAN: Sebutkan nama tab saat update dan paksa bersihkan cache
+        conn.update(worksheet="Sheet1", data=df_update)
+        st.cache_data.clear() 
+        
         st.session_state.tahap = 'sukses'
         st.rerun()
         
     except Exception as e:
-        st.error(f"⚠️ Gagal menyimpan data. Pastikan koneksi internet stabil. Detail: {e}")
-        time.sleep(4)
-        # Jika gagal, kembali ke form awal
+        st.error(f"⚠️ Gagal menyimpan data. Pastikan konfigurasi rahasia (Secrets) benar dan internet stabil. Detail: {e}")
+        time.sleep(5)
         st.session_state.tahap = 'form'
         st.rerun()
 
