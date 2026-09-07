@@ -44,7 +44,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
     box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.05) !important; 
 }
 div[data-testid="stFeedback"] {
-    transform: scale(7.75); /* Ukuran bintang ekstra besar sesuai request */
+    transform: scale(8.75); /* Ukuran bintang ekstra besar sesuai request */
     transform-origin: left center;
     margin-left: 10px; 
 }
