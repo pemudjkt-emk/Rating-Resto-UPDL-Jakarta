@@ -85,7 +85,7 @@ div[data-testid="stButton"] button p {
     align-items: center; 
 }
 .logo-danantara {
-    height: 115px; 
+    height: 125px; 
     object-fit: contain;
 }
 .logo-group-right {
@@ -94,11 +94,11 @@ div[data-testid="stButton"] button p {
     gap: 25px; 
 }
 .logo-updl {
-    height: 110px; 
+    height: 120px; 
     object-fit: contain;
 }
 .logo-pln {
-    height: 80px; 
+    height: 90px; 
     object-fit: contain;
 }
 .header-text {
